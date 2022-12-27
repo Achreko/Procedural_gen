@@ -1,32 +1,38 @@
-import opensimplex
+from opensimplex import OpenSimplex
 import numpy as np
 from PIL import Image
+from math import pow
+import random
 
 def generate():
-    # Create an instance of the OpenSimplex class
-    noise_gen = opensimplex .OpenSimplex(seed=1234)
+    noise_gen = OpenSimplex(seed=random.randint(0,10**6))
 
-    # Set the dimensions of the height  map
-    width = 512
-    height = 512
+    width = 256
+    height = 256
+    heights = np.empty((width,height))
 
-    # Create an array to store the height values
-    heights = np.empty((width, height))
-
-    # Generate noise values for each coordinate in the heightmap
     for x in range(width):
         for y in range(height):
-            # Generate a noise value using the noise2d method
-            noise_val = noise_gen.noise2(x=x, y=y)
-            # Scale and offset the noise value to fit the desired range of heights
-            scaled_val = (noise_val + 1) * 64
-            # Assign the height value to the appropriate element in the array
-            heights[x][y] = scaled_val
+            nx = x/width - 0.5
+            ny = y/height - 0.5
+            e1,e2,e3,e4,e5,e6 = 1, 0.5, 0.25, 0.12, 0.06, 0.03
+            exp = 1
+            elev = abs(e1 * noise_gen.noise2(1/e1*nx,1/e1*ny)) + \
+                    e2 * abs(noise_gen.noise2(1/e2*nx,1/e2*ny)) + \
+                    e3 * abs(noise_gen.noise2(1/e3*nx,1/e3*ny)) + \
+                    e4 * abs(noise_gen.noise2(1/e4*nx,1/e4*ny)) + \
+                    e5 * abs(noise_gen.noise2(1/e5*nx,1/e5*ny)) + \
+                    e6 * abs(noise_gen.noise2(1/e6*nx,1/e6*ny))
+            elev = elev/sum((e1,e2,e3,e4,e5,e6))
+            heights[y][x] = pow(elev,exp)
 
     # Create an image from the heightmap array using the PIL library
     img = Image.fromarray(heights, 'I')
-    img.save('results/heightmap.png')
+    img.save(f'results/heightmap{noise_gen.noise2(1/e1*nx,1/e1*ny)}.png')
 
+
+    def biome():
+        pass
 
 
 if __name__ == "__main__":
