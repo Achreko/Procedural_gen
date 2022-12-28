@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 from math import pow
 import random
+from land_enum import Land
 
 def generate():
     noise_gen_height = OpenSimplex(seed=random.randint(0,10**6))
@@ -42,7 +43,27 @@ def generate():
 
 
 def biome(e,m):
-    return 1
+    if e<0.1: return Land.OCEAN.value
+    if e<0.14: return Land.BEACH.value
+
+    if e >0.8:
+      if m< 0.1: return Land.SCORCHED.value
+      if m< 0.2: return Land.TUNDRA.value
+      return Land.SNOW.value
+
+    if e > 0.7:
+      if m < 0.45: return Land.SHRUBLAND.value
+      return Land.TAIGA.value
+
+    if e> 0.3:
+      if m < 0.1: return Land.DESERT.value
+      if m <0.5 : return Land.GRASSLAND.value
+      if m < 0.7: return Land.DECIDUOUS_FOREST.value
+      return Land.RAIN_FOREST.value
+
+    if m < 0.1: return Land.DESERT.value
+    if m < 0.4: return Land.GRASSLAND.value
+    return Land.VERDANT_RAIN_FOREST.value
 
 if __name__ == "__main__":
     generate()
