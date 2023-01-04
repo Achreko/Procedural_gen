@@ -1,9 +1,9 @@
 from opensimplex import OpenSimplex
 import numpy as np
-from PIL import Image
 from math import pow
 import random
 from land_enum import Land
+from image_functions import save_img
 
 
 def generate():
@@ -21,6 +21,7 @@ def generate():
             nx = 2*x/width - 1
             ny = 2*y/height - 1
 
+            # elevation
             e1,e2,e3,e4,e5,e6 = 1, 0.5, 0.25, 0.13, 0.06, 0.03
             exp = 2
             elev =  e1 * (noise_gen_height.noise2(1*nx,1*ny) /2.0 + 0.5) + \
@@ -30,6 +31,7 @@ def generate():
                     e5 * (noise_gen_height.noise2(16*nx,16*ny) /2.0 + 0.5)+ \
                     e6 * (noise_gen_height.noise2(32*nx,32*ny)/2.0 + 0.5)
 
+            #moisture
             m1,m2,m3,m4,m5,m6 = 1, 0.5, 0.25, 0.13, 0.06, 0.03
             moist = m1 * (noise_gen_moist.noise2(1*nx,1*ny) /2.0 + 0.5)+ \
                     m2 * (noise_gen_moist.noise2(2*nx,2*ny) /2.0 + 0.5)+ \
@@ -38,18 +40,21 @@ def generate():
                     m5 * (noise_gen_moist.noise2(16*nx,16*ny) /2.0 + 0.5)+ \
                     m6 * (noise_gen_moist.noise2(32*nx,32*ny)/2.0 + 0.5)
             
+            #temperature
+            
             # square bump
             d = 1 - (1-nx**2) * (1-ny**2)
             elev = (elev + (1-d))/2
             fudge_factor = 1.15
 
             heights[y][x] = biome(pow(elev *fudge_factor,exp), moist)
+
+            save_img(heights, "landmap", 'RGB')
+            save_img(elev)
     
-    img = Image.fromarray(heights, 'RGB')
-    img.save(f'results/heightmap{noise_gen_height.noise2(1/e1*nx,1/e1*ny)}.png')
 
 
-def biome(e,m):
+def biome(e: np.ndarray, m: np.ndarray) -> tuple:
     if e<0.1: return Land.OCEAN.value
     if e<0.14: return Land.BEACH.value
 
