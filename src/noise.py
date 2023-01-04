@@ -65,7 +65,7 @@ def generate():
             e_map[y][x] = elev*255
             fudge_factor = 1.15
 
-            heights[y][x] = biome(pow(elev *fudge_factor,exp), moist)
+            heights[y][x] = biome(pow(elev *fudge_factor,exp), moist, temperature)
 
     save_img(heights, "landmap", 'RGB')
     save_img(e_map,"elev",'L')
@@ -74,13 +74,13 @@ def generate():
     
 
 
-def biome(e: np.ndarray, m: np.ndarray) -> tuple:
+def biome(e: np.ndarray, m: np.ndarray, t: np.ndarray) -> tuple:
     if e<0.10: return Land.OCEAN.value
     if e<0.2: return Land.BEACH.value
 
     if e > 0.8:
-      if m< 0.6: return Land.SCORCHED.value
-      if m< 0.8: return Land.TUNDRA.value
+      if m < 0.6 or t >0.7: return Land.SCORCHED.value
+      if m < 0.8 or t > 0.2: return Land.TUNDRA.value
       return Land.SNOW.value
 
     if e > 0.7:
@@ -88,7 +88,7 @@ def biome(e: np.ndarray, m: np.ndarray) -> tuple:
       return Land.TAIGA.value
 
     if e <= 0.3:
-      if m < 0.1: return Land.DESERT.value
+      if m < 0.1 or t > 0.8: return Land.DESERT.value
       if m < 0.5 : return Land.GRASSLAND.value
       if m < 0.7: return Land.DECIDUOUS_FOREST.value
       return Land.RAIN_FOREST.value
