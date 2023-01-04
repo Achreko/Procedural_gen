@@ -1,2 +1,2 @@
-rm results/heightmap*
+rm results/*
 echo Ready to go!
