@@ -4,6 +4,7 @@ from math import pow
 import random
 from land_enum import Land
 from image_functions import save_img
+from gradients import *
 
 
 def generate():
@@ -14,11 +15,17 @@ def generate():
     noise_gen_moist = OpenSimplex(seed=seed_m)
     noise_gen_temperature = OpenSimplex(seed=seed_t)
 
-    width = 256
-    height = 256
+    width = 128
+    height = 128
+
+
+    exp = 2
     heights =  np.zeros((height,width,3), dtype=np.uint8)
 
     e_map, m_map, t_map = np.zeros((height,width), dtype=np.uint8), np.zeros((height,width), dtype=np.uint8), np.zeros((height,width), dtype=np.uint8)
+    grad = circular_gradient((height,width))
+
+    save_img(grad*255,"grad","L")
 
     for y in range(height):
         for x in range(width):
@@ -27,45 +34,53 @@ def generate():
 
             # elevation
             e = [1, 0.5, 0.25, 0.13, 0.06, 0.03]
-            exp = 2
+            
             elev =  e[0] * (noise_gen_height.noise2(1*nx,1*ny) /2.0 + 0.5) + \
-                    e[1] * (noise_gen_height.noise2(2*nx,2*ny) /2.0 + 0.5)+ \
-                    e[2] * (noise_gen_height.noise2(4*nx,4*ny) /2.0 + 0.5)+ \
-                    e[3] * (noise_gen_height.noise2(8*nx,8*ny) /2.0 + 0.5)+ \
-                    e[4] * (noise_gen_height.noise2(16*nx,16*ny) /2.0 + 0.5)+ \
-                    e[5] * (noise_gen_height.noise2(32*nx,32*ny)/2.0 + 0.5)
+                    e[1] * (noise_gen_height.noise2(2*nx + 2.137,2*ny + 3.75) /2.0 + 0.5)+ \
+                    e[2] * (noise_gen_height.noise2(4*nx + 7.77,4*ny + 6.66) /2.0 + 0.5)+ \
+                    e[3] * (noise_gen_height.noise2(8*nx +8.36 ,8*ny +17.3) /2.0 + 0.5)+ \
+                    e[4] * (noise_gen_height.noise2(16*nx + 21.37,16*ny + 20) /2.0 + 0.5)+ \
+                    e[5] * (noise_gen_height.noise2(32*nx + 37,32*ny + 28)/2.0 + 0.5)
             elev = elev/sum(e)
             #moisture
             m = [1, 0.5, 0.25, 0.13, 0.06, 0.03]
-            moist = m[0] * (noise_gen_moist.noise2(1*nx,1*ny) /2.0 + 0.5)+ \
-                    m[1] * (noise_gen_moist.noise2(2*nx,2*ny) /2.0 + 0.5)+ \
-                    m[2] * (noise_gen_moist.noise2(4*nx,4*ny) /2.0 + 0.5)+ \
-                    m[3] * (noise_gen_moist.noise2(8*nx,8*ny) /2.0 + 0.5)+ \
-                    m[4] * (noise_gen_moist.noise2(16*nx,16*ny) /2.0 + 0.5)+ \
-                    m[5] * (noise_gen_moist.noise2(32*nx,32*ny)/2.0 + 0.5)
+            moist = m[0] * (noise_gen_moist.noise2(1*nx,1*ny) /2.0 + 0.5) + \
+                    m[1] * (noise_gen_moist.noise2(2*nx + 2.137,2*ny + 3.75) /2.0 + 0.5) + \
+                    m[2] * (noise_gen_moist.noise2(4*nx + 7.77,4*ny + 6.66) /2.0 + 0.5) + \
+                    m[3] * (noise_gen_moist.noise2(8*nx +8.36 ,8*ny +17.3) /2.0 + 0.5) + \
+                    m[4] * (noise_gen_moist.noise2(16*nx + 21.37,16*ny + 20) /2.0 + 0.5) +\
+                    m[5] * (noise_gen_moist.noise2(32*nx + 37,32*ny + 28)/2.0 +  0.5)         
             moist = moist/sum(m)
             m_map[y][x] = moist*255
             #temperature
             t = [1, 0.5, 0.25, 0.13, 0.06, 0.03]
             temperature = t[0] * (noise_gen_temperature.noise2(1*nx,1*ny) /2.0 + 0.5)+ \
-                    t[1] * (noise_gen_temperature.noise2(2*nx,2*ny) /2.0 + 0.5)+ \
-                    t[2] * (noise_gen_temperature.noise2(4*nx,4*ny) /2.0 + 0.5)+ \
-                    t[3] * (noise_gen_temperature.noise2(8*nx,8*ny) /2.0 + 0.5)+ \
-                    t[4] * (noise_gen_temperature.noise2(16*nx,16*ny) /2.0 + 0.5)+ \
-                    t[5] * (noise_gen_temperature.noise2(32*nx,32*ny)/2.0 + 0.5)
+                    t[1] * (noise_gen_temperature.noise2(2*nx + 2.137,2*ny + 3.75) /2.0 + 0.5)+ \
+                    t[2] * (noise_gen_temperature.noise2(4*nx + 7.77,4*ny + 6.66) /2.0 + 0.5)+ \
+                    t[3] * (noise_gen_temperature.noise2(8*nx +8.36 ,8*ny +17.3) /2.0 + 0.5)+ \
+                    t[4] * (noise_gen_temperature.noise2(16*nx + 21.37,16*ny + 20) /2.0 + 0.5)+ \
+                    t[5] * (noise_gen_temperature.noise2(32*nx + 37,32*ny + 28)/2.0 + 0.5)
             temperature = temperature/sum(t)
             t_map[y][x] = temperature*255
 
-            # square bump
-            nx = 2*x/width - 1
-            ny = 2*y/height - 1
-            d = 1 - (1-nx**2) * (1-ny**2)
-            elev = (elev + (1-d))/2
+            # square bump for island
+            # nx = 2*x/width - 1
+            # ny = 2*y/height - 1
+
+            # d = 1 - (1-nx**2) * (1-ny**2)
+            # elev = (elev + (1-d))/2
+
+            # mountains
+
+
+
+            #archipelago
+
 
             e_map[y][x] = elev*255
             fudge_factor = 1.15
 
-            heights[y][x] = biome(pow(elev *fudge_factor,exp), moist, temperature)
+            heights[y][x] = biome(pow(elev * grad[y][x] *fudge_factor,exp), moist, temperature)
 
     save_img(heights, "landmap", 'RGB')
     save_img(e_map,"elev",'L')
@@ -79,9 +94,9 @@ def biome(e: np.ndarray, m: np.ndarray, t: np.ndarray) -> tuple:
     if e<0.2: return Land.BEACH.value
 
     if e > 0.8:
-      if m < 0.6 or t >0.7: return Land.SCORCHED.value
-      if m < 0.8 or t > 0.2: return Land.TUNDRA.value
-      return Land.SNOW.value
+      if m < 0.4 or t < 0.3: return Land.SNOW.value
+      if m < 0.8 or t < 0.7: return Land.TUNDRA.value
+      return Land.MOUNTAIN.value
 
     if e > 0.7:
       if m < 0.45: return Land.SHRUBLAND.value
