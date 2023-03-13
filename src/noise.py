@@ -15,17 +15,16 @@ def generate():
     noise_gen_moist = OpenSimplex(seed=seed_m)
     noise_gen_temperature = OpenSimplex(seed=seed_t)
 
-    width = 128
-    height = 128
+    width = 256
+    height = 256
 
 
     exp = 2
     heights =  np.zeros((height,width,3), dtype=np.uint8)
-
+    grad = circular_gradient((height,width),100)
+    save_img(grad, "essasito", "L")
     e_map, m_map, t_map = np.zeros((height,width), dtype=np.uint8), np.zeros((height,width), dtype=np.uint8), np.zeros((height,width), dtype=np.uint8)
-    grad = circular_gradient((height,width))
 
-    save_img(grad*255,"grad","L")
 
     for y in range(height):
         for x in range(width):
@@ -76,11 +75,12 @@ def generate():
 
             #archipelago
 
-
             e_map[y][x] = elev*255
             fudge_factor = 1.15
-
-            heights[y][x] = biome(pow(elev * grad[y][x] *fudge_factor,exp), moist, temperature)
+            if grad[y][x] == 0:
+                heights[y][x] = Land.OCEAN.value
+            else:
+                heights[y][x] = biome(pow(elev *fudge_factor,exp), moist, temperature)
 
     save_img(heights, "landmap", 'RGB')
     save_img(e_map,"elev",'L')
