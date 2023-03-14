@@ -1,11 +1,11 @@
 import numpy as np
 from PIL import Image
 
-def circular_gradient(shape: tuple, radius: int) -> np.ndarray:
+def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
     img = Image.new("L", shape)
     pix = img.load()
-    center_x = shape[1]//2
-    center_y = shape[0]//2
+    center_x = shape[1]//cntr
+    center_y = shape[0]//cntr
     for y in range(shape[0]):
         for x in range(shape[1]):
             dist = ((x - center_x) ** 2 + (y - center_y) ** 2) ** 0.5
