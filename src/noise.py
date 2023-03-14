@@ -21,10 +21,8 @@ def generate():
 
     exp = 2
     heights =  np.zeros((height,width,3), dtype=np.uint8)
-    grad = circular_gradient((height,width),100)
-    save_img(grad, "essasito", "L")
+    gradients = [circular_gradient((height,width),100, 2),circular_gradient((height,width),100, 3),circular_gradient((height,width),100, 1.5)]
     e_map, m_map, t_map = np.zeros((height,width), dtype=np.uint8), np.zeros((height,width), dtype=np.uint8), np.zeros((height,width), dtype=np.uint8)
-
 
     for y in range(height):
         for x in range(width):
@@ -74,7 +72,6 @@ def generate():
 
 
             #archipelago
-
             e_map[y][x] = elev*255
             fudge_factor = 1.15
             if grad[y][x] == 0:
