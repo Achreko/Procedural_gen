@@ -12,6 +12,6 @@ def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
             if dist < radius:
                 ratio = dist / radius
                 pix[y,x] = int(255 - 255*ratio)
-    grad = np.array(img)
+    grad = np.array(img, dtype=np.uint8)
     return grad
     
