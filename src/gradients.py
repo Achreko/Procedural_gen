@@ -14,4 +14,7 @@ def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
                 pix[y,x] = int(255 - 255*ratio)
     grad = np.array(img, dtype=np.uint8)
     return grad
-    
+
+
+def ridgenoise(noise: float) -> float:
+    return 2 * (0.5 - abs(0.5-noise))
