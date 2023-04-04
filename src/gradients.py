@@ -18,3 +18,7 @@ def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
 
 def ridgenoise(noise: float) -> float:
     return 2 * (0.5 - abs(0.5-noise))
+
+
+def river_generation(river_number: int, map: np.ndarray) -> np.ndarray:
+    pass
