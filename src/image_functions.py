@@ -1,6 +1,6 @@
 from PIL import Image
-from numpy import ndarray
+import numpy as np
 
-def save_img(array: ndarray, name: str, md: str) -> None:
+def save_img(array: np.ndarray, name: str, md: str) -> None:
     img = Image.fromarray(array, md)
     img.save(f'results/{name}.png')
