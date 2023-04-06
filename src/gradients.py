@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 
+
 def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
     img = Image.new("L", shape)
     pix = img.load()
@@ -16,9 +17,5 @@ def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
     return grad
 
 
-def ridgenoise(noise: float) -> float:
+def ridge_noise(noise: float) -> float:
     return 2 * (0.5 - abs(0.5-noise))
-
-
-def river_generation(river_number: int, map: np.ndarray) -> np.ndarray:
-    pass
