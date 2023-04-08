@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial import Voronoi
 from PIL import Image, ImageDraw
 
-def river_generation(river_number: int, map: np.ndarray, shp: tuple, point_number: int) -> np.ndarray:
+def river_generation(river_number: int, map: np.ndarray, shp: tuple, point_number: int):
     points = [[random.randrange(shp[0]), random.randrange(shp[0])]
      for xd in range(point_number)]
     points.append((-shp[0]*3, -shp[1]*3))
@@ -15,7 +15,7 @@ def river_generation(river_number: int, map: np.ndarray, shp: tuple, point_numbe
     draw = ImageDraw.Draw(img)
     vor = Voronoi(points)
     vor_vertices = vor.vertices
-    for region in vor.regions[1:100]:
+    for region in vor.regions[1:]:
         if -1 not in region:
             polygon = [tuple(vor_vertices[p]) for p in region]
             draw.polygon(polygon, outline='black')
@@ -32,4 +32,3 @@ def river_generation(river_number: int, map: np.ndarray, shp: tuple, point_numbe
 
 
     img.save("results/vor.png")
-    return map
