@@ -2,11 +2,11 @@ from opensimplex import OpenSimplex
 import numpy as np
 from math import pow
 import random
-from land_enum import Land
-from image_functions import save_img
+from image_functions import *
 from gradients import *
 from rivers import *
 from math import sqrt
+
 
 def generate():
     seed_h = random.randint(0,10**6)
@@ -74,7 +74,7 @@ def generate():
             # mountains
 
 
-            e_map[y][x] = elev*255
+            # e_map[y][x] = elev*255
             
             fudge_factor = 1.15
             heights[y][x] = biome(pow(elev *fudge_factor,exp), moist, temperature)
@@ -85,32 +85,9 @@ def generate():
     save_img(e_map,"elev",'L')
     save_img(m_map,"moist",'L')
     save_img(t_map,"temperature",'L')
-    river_generation(2, heights,(HEIGHT, WIDTH),256)
+    river_generation(2, e_map, m_map,t_map,256)
     
 
-
-def biome(e: np.ndarray, m: np.ndarray, t: np.ndarray) -> tuple:
-    if e<0.15: return Land.OCEAN.value
-    if e<0.2: return Land.BEACH.value
-
-    if e > 0.7:
-      if m < 0.4 or t < 0.3: return Land.SNOW.value
-      if m < 0.8 or t < 0.7: return Land.TUNDRA.value
-      return Land.MOUNTAIN.value
-
-    if e > 0.5:
-      if m < 0.45: return Land.SHRUBLAND.value
-      return Land.TAIGA.value
-
-    if e <= 0.5:
-      if m < 0.1 or t > 0.8: return Land.DESERT.value
-      if m < 0.5 : return Land.GRASSLAND.value
-      if m < 0.7: return Land.DECIDUOUS_FOREST.value
-      return Land.RAIN_FOREST.value
-
-    if m < 0.1: return Land.DESERT.value
-    if m < 0.4: return Land.GRASSLAND.value
-    return Land.VERDANT_RAIN_FOREST.value
 
 if __name__ == "__main__":
     generate()
