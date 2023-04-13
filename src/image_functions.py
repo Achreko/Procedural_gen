@@ -8,7 +8,7 @@ def save_img(array: np.ndarray, name: str, md: str) -> None:
 
 
 def biome(e: np.ndarray, m: np.ndarray, t: np.ndarray) -> tuple:
-    if e<0.15: return Land.OCEAN.value
+    if e<0.15: return (0,0,255-int(255 * e))
     if e<0.2: return Land.BEACH.value
 
     if e > 0.7:
