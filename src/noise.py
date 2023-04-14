@@ -35,7 +35,7 @@ def generate():
             # elevation
             e = [1, 0.5, 0.25, 0.13, 0.06, 0.03]
             # elev = (noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5) #for archipelago
-            # elev = (ridge_noise(noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5)) # for mountains
+            # elev = (ridge_noise(noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5)) 
             elev =  e[0] * (noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5) + \
                     e[1] * (noise_gen_height.noise2((2*x + 2.137) / FEATURE_SIZE,(2*y + 3.75) / FEATURE_SIZE) /2.0 + 0.5) + \
                     e[2] * (noise_gen_height.noise2((4*x + 690) / FEATURE_SIZE,(4*y + 690) / FEATURE_SIZE) /2.0 + 0.5) + \
@@ -45,12 +45,12 @@ def generate():
             elev = elev/sum(e)
             #moisture
             m = [1, 0.5, 0.25, 0.13, 0.06, 0.03]
-            moist = m[0] * (noise_gen_moist.noise2(1*nx,1*ny) /2.0 + 0.5) + \
-                    m[1] * (noise_gen_moist.noise2(2*nx + 2.137,2*ny + 3.75) /2.0 + 0.5) + \
-                    m[2] * (noise_gen_moist.noise2(4*nx + 7.77,4*ny + 6.66) /2.0 + 0.5) + \
-                    m[3] * (noise_gen_moist.noise2(8*nx +8.36 ,8*ny +17.3) /2.0 + 0.5) + \
-                    m[4] * (noise_gen_moist.noise2(16*nx + 21.37,16*ny + 20) /2.0 + 0.5) +\
-                    m[5] * (noise_gen_moist.noise2(32*nx + 37,32*ny + 28)/2.0 +  0.5)         
+            moist = m[0] * (noise_gen_moist.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5) + \
+                    m[1] * (noise_gen_moist.noise2((2*x + 2.137) / FEATURE_SIZE,(2*y + 3.75) / FEATURE_SIZE) /2.0 + 0.5) + \
+                    m[2] * (noise_gen_moist.noise2((4*x + 690) / FEATURE_SIZE,(4*y + 690) / FEATURE_SIZE) /2.0 + 0.5) + \
+                    m[3] * (noise_gen_moist.noise2((8*x + 4200) / FEATURE_SIZE,(8*y +4200) / FEATURE_SIZE) /2.0 + 0.5) + \
+                    m[4] * (noise_gen_moist.noise2((16*x + 1800) / FEATURE_SIZE,(16*y + 1800) / FEATURE_SIZE) /2.0 + 0.5) +\
+                    m[5] * (noise_gen_moist.noise2((32*x + 2137) / FEATURE_SIZE,(32*y + 2137) / FEATURE_SIZE)/2.0 + 0.5)        
             moist = moist/sum(m)
             m_map[y][x] = moist*255
             #temperature
@@ -74,9 +74,11 @@ def generate():
             # mountains
 
 
-            # e_map[y][x] = elev*255
             
             fudge_factor = 1.15
+
+            e_map[y][x] = pow(elev *fudge_factor,exp)*255
+
             heights[y][x] = biome(pow(elev *fudge_factor,exp), moist, temperature)
             # heights[y][x] = biome(pow(elev *fudge_factor * grad[y][x]/255,exp), moist, temperature) #for archipelago
             
