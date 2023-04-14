@@ -19,3 +19,13 @@ def circular_gradient(shape: tuple, radius: int, cntr: float) -> np.ndarray:
 
 def ridge_noise(noise: float) -> float:
     return 2 * (0.5 - abs(0.5-noise))
+
+
+def gradient_descent(f, df, start_point, learning_rate, max_iter):
+    x = start_point
+    for i in range(max_iter):
+        gradient = df(x)
+        x -= learning_rate * gradient
+        if np.linalg.norm(gradient) < 1e-12:
+            break
+    return x
