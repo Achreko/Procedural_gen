@@ -6,7 +6,7 @@ from image_functions import biome
 from vorigon import Vorigon
 from deriangle import Deriangle
 
-def river_generation(river_number: int, e_mp: np.ndarray, m_mp: np.ndarray, t_mp: np.ndarray, point_number: int) -> None:
+def voron_gen( e_mp: np.ndarray, m_mp: np.ndarray, t_mp: np.ndarray, point_number: int) -> None:
     shp = e_mp.shape
     points = [[random.randrange(shp[0]), random.randrange(shp[0])]
      for xd in range(point_number)]
@@ -17,7 +17,7 @@ def river_generation(river_number: int, e_mp: np.ndarray, m_mp: np.ndarray, t_mp
     
     vorigons, deriangles = [], []
 
-    img = Image.new("RGB", shp, color=(0,0,160))
+    img = Image.new("RGB", shp, color=(0,0,220))
     draw = ImageDraw.Draw(img)
     vor = Voronoi(points)
 
@@ -29,13 +29,12 @@ def river_generation(river_number: int, e_mp: np.ndarray, m_mp: np.ndarray, t_mp
 
             for el in polygon:
                 if el[0] > 0 and el[1] > 0 and el[0] < shp[0] and el[1] < shp[1]:
-                    coordinates.append(int(el[0]))
-                    coordinates.append(int(el[1]))
-            if len(coordinates) >=6:
-                st_x = min(coordinates[0],coordinates[-2])
-                st_y= min(coordinates[1], coordinates[-1])
-                fn_x = max(coordinates[0],coordinates[-2])
-                fn_y= max(coordinates[1], coordinates[-1])
+                    coordinates.append(tuple([int(el[0]),int(el[1])]))
+            if len(coordinates) >=3:
+                st_x = min(coordinates[0][0],coordinates[-1][0])
+                st_y= min(coordinates[0][1], coordinates[-1][1])
+                fn_x = max(coordinates[0][0],coordinates[-1][0])
+                fn_y= max(coordinates[0][1], coordinates[-1][1])
                 if st_x == fn_x:
                     fn_x += 1
                 if st_y == fn_y:
@@ -68,13 +67,7 @@ def river_generation(river_number: int, e_mp: np.ndarray, m_mp: np.ndarray, t_mp
     #         draw.polygon(polygon, outline="red")
 
 
-    vorigons.sort(key= lambda xd: xd.height)
-
-
-    for i in range(river_number):
-        draw.line([vorigons[0+i].center, vorigons[-2-i].center], fill="red", width=2)
-
-
+    vorigons.sort(reverse=True, key= lambda xd: xd.height)
 
 
     img.save("results/vor.png")
@@ -82,5 +75,23 @@ def river_generation(river_number: int, e_mp: np.ndarray, m_mp: np.ndarray, t_mp
 
 
 def find_most_freq(ar: np.ndarray) -> float:
-    vals, counts = np.unique(ar, return_counts=True)
-    return (vals[counts.argmax()] + ar.max())/255
+    return (np.amax(ar) + np.amin(ar))/255
+
+
+
+# def midpoint_displacement(cord: list, roughness: float) -> list:
+#     new_points = [cord[0]]
+#     for i in range(len(cord) - 1):
+#         x1, y1 = cord[i]
+#         x2, y2 = cord[i + 1]
+#         mx = (x1 + x2) // 2
+#         my = (y1 + y2) // 2
+#         displacement = (random.random() - 0.5) * roughness * (x2 - x1 + y2 - y1)
+#         height = int((y1 + y2) / 2 + displacement)
+#         new_points.append((mx, height))
+#     if len(new_points) > 2:
+#         roughness /= 2
+#         left_points = midpoint_displacement(new_points[:len(new_points) // 2 + 1], roughness)
+#         right_points = midpoint_displacement(new_points[len(new_points) // 2:], roughness)
+#         new_points = left_points[:-1] + right_points
+#     return new_points
