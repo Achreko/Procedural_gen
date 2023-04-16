@@ -3,8 +3,8 @@ import numpy as np
 from math import pow
 import random
 from image_functions import *
-from gradients import *
-from rivers import *
+from gradients import circular_gradient, gradient_descent
+from vor import *
 from math import sqrt
 
 
@@ -20,13 +20,12 @@ def generate():
     HEIGHT = 256
     FEATURE_SIZE = 24
 
-    exp = 6
-    heights =  np.zeros((HEIGHT,WIDTH,3), dtype=np.uint8)
+    exp = 3
+    heights =  np.empty((HEIGHT,WIDTH,3), dtype=np.uint8)
     # gradients = [circular_gradient((HEIGHT,WIDTH),50, 2),circular_gradient((HEIGHT,WIDTH),50, 2.5),circular_gradient((HEIGHT,WIDTH),50, 1.5)]
     # grad = circular_gradient((HEIGHT,WIDTH),150, 2)
 
     e_map, m_map, t_map = np.empty((HEIGHT,WIDTH), dtype=np.uint8), np.empty((HEIGHT,WIDTH), dtype=np.uint8), np.empty((HEIGHT,WIDTH), dtype=np.uint8)
-
     for y in range(HEIGHT):
         for x in range(WIDTH):
             nx = x/WIDTH - 0.5
@@ -35,7 +34,8 @@ def generate():
             # elevation
             e = [1, 0.5, 0.25, 0.13, 0.06, 0.03]
             # elev = (noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5) #for archipelago
-            # elev = (ridge_noise(noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5)) 
+           
+            # elev = (ridge_noise(noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5)) + \
             elev =  e[0] * (noise_gen_height.noise2(x / FEATURE_SIZE,y / FEATURE_SIZE) /2.0 + 0.5) + \
                     e[1] * (noise_gen_height.noise2((2*x + 2.137) / FEATURE_SIZE,(2*y + 3.75) / FEATURE_SIZE) /2.0 + 0.5) + \
                     e[2] * (noise_gen_height.noise2((4*x + 690) / FEATURE_SIZE,(4*y + 690) / FEATURE_SIZE) /2.0 + 0.5) + \
@@ -70,7 +70,6 @@ def generate():
             d = min(1, (nx**2 + ny**2) / sqrt(2))
             # d = 1 - (1-nx**2) * (1-ny**2)
             elev = (elev + (1-d))/2
-
             # mountains
 
 
@@ -79,15 +78,17 @@ def generate():
 
             e_map[y][x] = pow(elev *fudge_factor,exp)*255
 
+
             heights[y][x] = biome(pow(elev *fudge_factor,exp), moist, temperature)
             # heights[y][x] = biome(pow(elev *fudge_factor * grad[y][x]/255,exp), moist, temperature) #for archipelago
             
     # save_img(grad, "grad", "L")
     save_img(heights, "landmap", 'RGB')
     save_img(e_map,"elev",'L')
-    save_img(m_map,"moist",'L')
-    save_img(t_map,"temperature",'L')
-    river_generation(2, e_map, m_map,t_map,256)
+    # save_img(m_map,"moist",'L')
+    # save_img(t_map,"temperature",'L')
+    # voron_gen(e_map, m_map,t_map,256)
+    gradient_descent(e_map)
     
 
 
